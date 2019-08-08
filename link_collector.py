@@ -24,11 +24,11 @@ def main():
 
 	url = 'https://www.instagram.com/groznytv/'
 
-	driver = webdriver.Chrome()
+	driver = webdriver.Firefox()
 
 	driver.get(url)
 
-	SCROLL_PAUSE_TIME = 6
+	SCROLL_PAUSE_TIME = 5
 
 	last_height = driver.execute_script("return document.body.scrollHeight")
 	
@@ -38,7 +38,7 @@ def main():
 	while True:
 
 		driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
+		
 		time.sleep(SCROLL_PAUSE_TIME)
 
 		new_height = driver.execute_script("return document.body.scrollHeight")

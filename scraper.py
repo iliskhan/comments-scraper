@@ -1,4 +1,5 @@
 from selenium import webdriver
+from tqdm import tqdm
 
 import pandas as pd 
 
@@ -38,21 +39,20 @@ def get_comment(driver, path_to_post):
         user_names.append(name)
         user_comments.append(content)
 
-    user_names.pop(0)
-    user_comments.pop(0) 
+ 
     return user_names, user_comments
 
 
 def main():
 
-    driver = webdriver.Chrome()
+    driver = webdriver.Firefox()
 
     user_names = []
     user_comments = []
 
     links = pd.read_csv('links.csv',header=None)
     
-    for idx, link in links.iterrows():
+    for idx, link in tqdm(links.iterrows()):
         names, comments = get_comment(driver, link[0])
         user_names.extend(names)
         user_comments.extend(comments)
