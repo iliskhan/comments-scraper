@@ -45,7 +45,7 @@ def get_comment(driver, path_to_post):
 
 def main():
 
-    driver = webdriver.Firefox()
+    driver = webdriver.Chrome()
 
     user_names = []
     user_comments = []
