@@ -3,9 +3,10 @@ from tqdm import tqdm
 
 import pandas as pd 
 
-import excel_exporter
+import json
 import time
 import sys
+import os
 
 def get_comment(driver, path_to_post):
     user_names = []
@@ -30,6 +31,9 @@ def get_comment(driver, path_to_post):
         pass
 
 
+    description = driver.find_element_by_class_name('C4VMK')
+    description = description.find_elements_by_tag_name('span')[1].text
+
     comment = driver.find_elements_by_class_name('gElp9 ')
     for c in comment:
         container = c.find_element_by_class_name('C4VMK')
@@ -39,27 +43,30 @@ def get_comment(driver, path_to_post):
         user_names.append(name)
         user_comments.append(content)
 
- 
-    return user_names, user_comments
+    user_names.pop(0)
+    user_comments.pop(0)
+
+    return description, user_names, user_comments
 
 
 def main():
 
     driver = webdriver.Chrome()
 
-    user_names = []
-    user_comments = []
 
     links = pd.read_csv('links.csv',header=None)
     
-    for idx, link in tqdm(links.iterrows()):
-        names, comments = get_comment(driver, link[0])
-        user_names.extend(names)
-        user_comments.extend(comments)
+    with open('comments.json','w', encoding='utf-8') as f_json:
+        f_json.write('[\n')
+        for idx, link in tqdm(links.iterrows()):
+            description, names, comments = get_comment(driver, link[0])
+            data = {'описание': description, 'комменты': comments}
+            out = json.dumps(data, ensure_ascii=False)
+            print(f'\t{out},', file=f_json)
 
-    print(len(user_names), len(user_comments))
-    excel_exporter.export(user_names, user_comments)
-
+        f_json.seek(0, os.SEEK_END)
+        f_json.seek(f_json.tell() - 3, os.SEEK_SET)
+        f_json.write('\n]')
 
     driver.close()
 
